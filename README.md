@@ -22,7 +22,7 @@ VESA DDI
 - Setting video mode (width, height, bpp, refresh rate)
 - Waiting for VBlank (syncing to vertical refresh)
 - Allocating off-screen surfaces
-- Blitting from one surface to another (with 32<->16bpp color-space conversion)
+- Blitting from one surface to another (with 32<->16bpp color-space conversion) & alpha if desired
 - Basic primitive draw operations
 - - Line draw
 - - Circles
