@@ -5,10 +5,6 @@ mov ax, 0
 mov es, ax
 mov [diskNum], dl
 
-;mov eax, hello
-;push ax
-;call puts
-
 push KERNEL_LOCATION ;address to store into
 push 0x00 ;head number
 push 0x0002 ;cylinder/sector number
@@ -21,16 +17,13 @@ lgdt [GDT_Descriptor]
 mov eax, cr0
 or eax, 1
 mov cr0, eax
+
 jmp CODE_SEG:start_protected_mode
 
 jmp $
 
 CODE_SEG equ code_descriptor - GDT_Start
 DATA_SEG equ data_descriptor - GDT_Start
-
-GDT_Descriptor:
-    dw GDT_End - GDT_Start - 1 ;size
-    dd GDT_Start ;start
 
 GDT_Start:
     null_descriptor:
@@ -52,6 +45,10 @@ GDT_Start:
         db 0
     GDT_End:
 
+GDT_Descriptor:
+    dw GDT_End - GDT_Start - 1 ;size
+    dd GDT_Start ;start
+
 
 loadsector:
     mov BP, SP
@@ -68,7 +65,6 @@ loadsector:
 [bits 32]
 start_protected_mode:
     mov ax, DATA_SEG
-
     ;mov ds, ax
     ;mov ss, ax
     ;mov es, ax
@@ -77,7 +73,7 @@ start_protected_mode:
 
     ;mov ebp, 0x90000
     ;mov esp, ebp
-    jmp KERNEL_LOCATION
+    jmp CODE_SEG:KERNEL_LOCATION
 
 
 diskNum: db 0
