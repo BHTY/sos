@@ -12,6 +12,9 @@ Tasks (no particular order)
 VESA DDI
 - Setting video mode (width, height, bpp, refresh rate)
 - Allocating off-screen surfaces
-- Blitting from one surface to another
+- Blitting from one surface to another (with 32<->16bpp color-space conversion)
 - Basic draw operations
-- - Polygons
+-   Line draw
+-   Circles
+-   Basic polygons (filled and otherwise)
+-   Text (vector and raster fonts)
