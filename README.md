@@ -8,6 +8,7 @@ Tasks (no particular order)
 - VESA video driver
 - Kernel heap (malloc/free from a flat linear physical pool)
 - Virtual memory / paging (mapping virtual address space)
+- Multitasking/multithreading kernel with message passing
 
 VESA DDI
 - Setting video mode (width, height, bpp, refresh rate)
