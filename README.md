@@ -2,14 +2,16 @@
 Basic pmode operating system
 
 Tasks (no particular order)
-1. Kernel heap (kmalloc/kfree from a flat linear physical pool)
-2. Virtual memory / paging (mapping virtual address space)
-3. PS/2 keyboard/mouse driver
-4. IDE PIO driver
-5. Filesystem driver
-6. VESA video driver + virtual terminal
-7. Multitasking/multithreading kernel with message passing
-8. libc
+1. Housekeeping (standard types)
+2. Kernel heap (kmalloc/kfree from a flat linear physical pool)
+3. - Data structures
+4. Virtual memory / paging (mapping virtual address space)
+5. PS/2 keyboard/mouse driver
+6. IDE PIO driver
+7. Filesystem driver
+8. VESA video driver + virtual terminal
+9. Multitasking/multithreading kernel with message passing
+10. libc
 
 VESA DDI
 - Setting video mode (width, height, bpp, refresh rate)
