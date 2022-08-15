@@ -23,7 +23,7 @@ VESA DDI
 - Waiting for VBlank (syncing to vertical refresh)
 - Allocating off-screen surfaces
 - Blitting from one surface to another (with 32<->16bpp color-space conversion)
-- Basic draw operations
+- Basic primitive draw operations
 - - Line draw
 - - Circles
 - - Basic polygons (filled and otherwise)
