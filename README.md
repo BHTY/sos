@@ -7,4 +7,4 @@ Tasks (no particular order)
 - PS/2 keyboard/mouse driver
 - VESA video driver
 - Kernel heap (malloc/free from a flat linear physical pool)
-- Virtual memory
+- Virtual memory / paging
