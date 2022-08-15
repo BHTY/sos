@@ -3,8 +3,7 @@ Basic pmode operating system
 
 Tasks (no particular order)
 1. Housekeeping (standard types)
-2. Kernel heap (kmalloc/kfree from a flat linear physical pool)
-3. - Data structures
+2. Kernel heap (kmalloc/kfree from a flat linear physical pool) & associated data structures - array, linked list, bit array
 4. Virtual memory / paging (mapping virtual address space)
 5. PS/2 keyboard/mouse driver
 6. IDE PIO driver
