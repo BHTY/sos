@@ -14,7 +14,7 @@ VESA DDI
 - Allocating off-screen surfaces
 - Blitting from one surface to another (with 32<->16bpp color-space conversion)
 - Basic draw operations
--   Line draw
--   Circles
--   Basic polygons (filled and otherwise)
--   Text (vector and raster fonts)
+- - Line draw
+- - Circles
+- - Basic polygons (filled and otherwise)
+- - Text (vector and raster fonts)
