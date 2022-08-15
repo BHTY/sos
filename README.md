@@ -7,7 +7,7 @@ Tasks (no particular order)
 3. PS/2 keyboard/mouse driver
 4. IDE PIO driver
 5. Filesystem driver
-6. VESA video driver
+6. VESA video driver + virtual terminal
 7. Multitasking/multithreading kernel with message passing
 
 VESA DDI
