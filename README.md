@@ -12,6 +12,12 @@ Tasks (no particular order)
 8. Multitasking/multithreading kernel with message passing
 9. libc
 
+Current Status
+* Real-mode "disk driver" (i.e. loadsector function that calls int 0x10)
+* Switch into flat memory model (linear physical address space) protected mode
+* Basic VGA (mode 0x03) text mode driver
+* Prints out strings, chars, hex numbers
+
 VESA DDI
 - Setting video mode (width, height, bpp, refresh rate)
 - Waiting for VBlank (syncing to vertical refresh)
