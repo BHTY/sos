@@ -2,7 +2,7 @@
 Basic pmode operating system
 
 Tasks (no particular order)
-1. Kernel heap (malloc/free from a flat linear physical pool)
+1. Kernel heap (kmalloc/kfree from a flat linear physical pool)
 2. Virtual memory / paging (mapping virtual address space)
 3. PS/2 keyboard/mouse driver
 4. IDE PIO driver
