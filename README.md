@@ -13,7 +13,7 @@ Tasks (no particular order)
 9. libc
 
 Current Status
-* Real-mode "disk driver" (i.e. loadsector function that calls int 0x10)
+* Real-mode "disk driver" (i.e. `loadsector` function that calls int 0x10)
 * Switch into flat memory model (linear physical address space) protected mode
 * Basic VGA (mode 0x03) text mode driver
 * Prints out strings, chars, hex numbers
