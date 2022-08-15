@@ -9,6 +9,7 @@ Tasks (no particular order)
 5. Filesystem driver
 6. VESA video driver + virtual terminal
 7. Multitasking/multithreading kernel with message passing
+8. libc
 
 VESA DDI
 - Setting video mode (width, height, bpp, refresh rate)
