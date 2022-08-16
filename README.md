@@ -2,7 +2,7 @@
 Basic pmode operating system
 
 Tasks (no particular order)
-1. Port I/O driver & 8042 PS/2 keyboard driver
+1. 8042 PS/2 keyboard driver
 2. Kernel heap (kmalloc/kfree from a flat linear physical pool) & associated data structures - array, linked list, bit array
 3. Virtual memory / paging (mapping virtual address space)
 4. PS/2 mouse driver
@@ -17,6 +17,7 @@ Current Status
 * Switch into flat memory model (linear physical address space) protected mode
 * Basic VGA (mode 0x03) text mode driver
 * Prints out strings, chars, hex numbers
+* Port I/O driver
 
 VESA DDI
 - Setting video mode (width, height, bpp, refresh rate)
