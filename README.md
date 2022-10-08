@@ -2,15 +2,14 @@
 Basic pmode operating system
 
 Tasks (no particular order)
-1. 8042 PS/2 keyboard driver
-2. Kernel heap (kmalloc/kfree from a flat linear physical pool) & associated data structures - array, linked list
-3. Virtual memory / paging (mapping virtual address space)
-4. PS/2 mouse driver
-5. IDE PIO driver
-6. Filesystem driver
-7. VESA video driver + virtual terminal
-8. Multitasking/multithreading kernel with message passing
-9. libc
+1. Rewrite some stuff
+2. A20 line
+3. Timer interrupt (make IDT, reprogram PIT to higher frequency) -> multithreading/multitasking! (+ message passing)
+4. PS/2 keyboard driver
+5. Hide a thread cleanup function at the back of thread stacks
+6. ATA/IDE PIO driver
+
+Others: VESA, libc
 
 Current Status
 * Real-mode "disk driver" (i.e. `loadsector` function that calls int 0x13)
@@ -19,14 +18,4 @@ Current Status
 * Prints out strings, chars, hex numbers
 * Port I/O driver
 * Data structures - bit array
-
-VESA DDI
-- Setting video mode (width, height, bpp, refresh rate)
-- Waiting for VBlank (syncing to vertical refresh)
-- Allocating off-screen surfaces
-- Blitting from one surface to another (with 32<->16bpp color-space conversion) & alpha if desired
-- Basic primitive draw operations
-- - Line draw
-- - Circles
-- - Basic polygons (filled and otherwise)
-- - Text (vector and raster fonts)
+* Cooperative multitasking
