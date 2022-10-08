@@ -16,6 +16,7 @@ size_t stackptr = 0;
 typedef struct task{
     uint32_t esp;
     struct task* next;
+    struct task* prev;
 } task;
 
 task* curTask;
@@ -24,6 +25,21 @@ task otherTask;
 task thirdTask;
 
 void yield();
+void resume();
+
+void thread_cleanup(){
+    task* tmp = curTask;
+
+    curTask->prev->next = curTask->next;
+    kfree(curTask->esp);
+    curTask = curTask->next;
+    kfree(tmp);
+
+    //context switch into new curTask
+    resume();
+
+    puts("AAAAAAAAAAAAAAAAAAAAAAAA");
+}
 
 void createTask(task* ptr, void (*fun)()){ //varargs
     char str[20];
@@ -33,12 +49,13 @@ void createTask(task* ptr, void (*fun)()){ //varargs
     //ptr->esp = stackptr + STACK_SIZE - 9 * sizeof(uint32_t);
     //ptr->esp += (uint32_t)stacks;
     
-    ptr->esp = stack + STACK_SIZE - 9*sizeof(uint32_t);
+    ptr->esp = stack + STACK_SIZE - 10*sizeof(uint32_t);
     
     ptr->next = 0;
 
     //*(uint32_t*)   (  (uint32_t)(stacks) + stackptr + STACK_SIZE - sizeof(uint32_t)    ) = (uint32_t)fun;
-    *(uint32_t*)     (  stack + STACK_SIZE - sizeof(uint32_t)   )    = (uint32_t)fun;
+    *(uint32_t*)     (  stack + STACK_SIZE - 2 * sizeof(uint32_t)   )    = (uint32_t)fun;
+    *(uint32_t*)     (  stack + STACK_SIZE - 1 * sizeof(uint32_t)   )    = (uint32_t)thread_cleanup;
 
     /*puts("  ");
     hex((uint32_t)(stackptr) + STACK_SIZE - sizeof(uint32_t), str);
@@ -62,9 +79,14 @@ uint32_t counter = 0;
 }
 
 void otherbiff(){
+
     while(1){
-    puts("Thread 3");
-    yield();}
+        setcolor(0x02);
+        puts("THREAD 3: ");
+        yield();
+        setcolor(0x03);
+        puts("Returned from yield!\n");
+    }
 }
 
 void debug(){
@@ -72,6 +94,7 @@ void debug(){
     hex(curTask->esp, str);
     puts(str);
     putch('\n');
+    //puts("yo");
 }
 
 
@@ -96,6 +119,7 @@ asm("\n\tmov eax, DWORD PTR curTask\n\t"
 asm("\n\t\tmov eax, DWORD PTR curTask\n\t"
     "   mov eax, DWORD PTR [eax+4]\n\t"
     "   mov DWORD PTR curTask, eax\n\t"
+    "   resume:\n\t"
     "   mov eax, DWORD PTR curTask\n\t"
     "   mov esp, DWORD PTR [eax]\n\t");
 
@@ -116,7 +140,7 @@ void main(){
     char str[20];
 
     init_heap(HEAP, TOTALHEAPSIZE);
-    
+
     curTask = &mainTask;
 
     mainTask.next = &otherTask;
@@ -126,10 +150,16 @@ void main(){
     otherTask.next = &thirdTask;
     thirdTask.next = curTask;
 
+    mainTask.prev = &thirdTask;
+    otherTask.prev = &mainTask;
+    thirdTask.prev = &otherTask;
+
     while(1){
-        puts("Thread 1 about to yield\n");
+        setcolor(0x02);
+        puts("THREAD 1: ");
+        setcolor(0x04);
+        puts("YIELDING\n");
         yield();
-        puts("Task-switched back into thread 1\n");
         
         //SET_TCB(&tb);
 
@@ -139,32 +169,3 @@ void main(){
         //putch('\n');
     }
 }
-
-/**void tnt(){
-    size_t data[10];
-
-    yield();
-
-    kmemset(data, 0, sizeof(data));
-
-    bitarray_t bitarray;
-
-    bitarray.elements = 64;
-    bitarray.data = data;
-
-    for(int i = 0; i < 24; i++){
-        bitarray_set(&bitarray, i, true);
-    }
-
-    char str[20];
-    hex(0xDEADBEEF, str);
-
-    while(1){
-        hex(bitarray.data[0], str);
-        puts(str);
-        putch('\n');
-        getch();
-    }
-
-    return;
-}**/

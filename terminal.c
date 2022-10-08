@@ -5,9 +5,13 @@
 #define TEXT_BUFFER (char*)0xb8000
 #define CHARS_PER_LINE 80
 #define LINES 25
-#define COLOR_ATTR 0x20
 
+uint8_t COLOR_ATTR = 0x20;
 int cursor_position = 0;
+
+void setcolor(uint8_t col){
+    COLOR_ATTR = col;
+}
 
 void scroll(){
     for(int i = 0; i < LINES - 1; i++){
