@@ -1,6 +1,13 @@
+clear
 i386-elf-gcc -ffreestanding -m32 -g -c "kernel.c" -o "kernel.o"
+i386-elf-gcc -ffreestanding -m32 -g -c "heap.c" -o "heap.o"
+i386-elf-gcc -ffreestanding -m32 -g -c "string.c" -o "string.o"
+i386-elf-gcc -ffreestanding -m32 -g -c "terminal.c" -o "terminal.o"
+i386-elf-gcc -ffreestanding -m32 -g -c "ports.c" -o "ports.o"
+i386-elf-gcc -ffreestanding -m32 -g -c "8042.c" -o "8042.o"
+i386-elf-gcc -ffreestanding -m32 -g -c "bitarray.c" -o "bitarray.o"
 nasm "kernel_entry.asm" -f elf -o "kernel_entry.o"
-i386-elf-ld -o "full_kernel.bin" -Ttext 0x1000 "kernel_entry.o" "kernel.o" --oformat binary
+i386-elf-ld -o "full_kernel.bin" -Ttext 0x1000 "kernel_entry.o" "heap.o" "kernel.o" "string.o" "terminal.o" "ports.o" "8042.o" "bitarray.o" --oformat binary
 nasm "boot.asm" -f bin -o "boot.bin"
 cat "boot.bin" "full_kernel.bin" > "everything.bin"
 nasm "zeroes.asm" -f bin -o "zeroes.bin"

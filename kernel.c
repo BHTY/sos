@@ -1,142 +1,170 @@
-#define TEXT_BUFFER (char*)0xb8000
-#define CHARS_PER_LINE 80
-#define LINES 25
+#include "types.h"
+#include "string.h"
+#include "terminal.h"
+#include "bitarray.h"
+#include "8042.h"
+#include "heap.h"
 
-int cursor_position = 0;
+#define TOTALHEAPSIZE   16384
+uint8_t HEAP[16384];
 
-void kmemset(unsigned char* ptr, unsigned char value, int num){
-    while(num--){
-        *(ptr++) = value;
+#define STACK_SIZE  512
+
+uint32_t stacks[16384];
+size_t stackptr = 0;
+
+typedef struct task{
+    uint32_t esp;
+    struct task* next;
+} task;
+
+task* curTask;
+task mainTask;
+task otherTask;
+task thirdTask;
+
+void yield();
+
+void createTask(task* ptr, void (*fun)()){ //varargs
+    char str[20];
+    uint32_t stack = kmalloc(STACK_SIZE);
+
+    //push EIP, EFLAGS, EBP, EDI, ESI, EDX, ECX, EBX, EAX
+    //ptr->esp = stackptr + STACK_SIZE - 9 * sizeof(uint32_t);
+    //ptr->esp += (uint32_t)stacks;
+    
+    ptr->esp = stack + STACK_SIZE - 9*sizeof(uint32_t);
+    
+    ptr->next = 0;
+
+    //*(uint32_t*)   (  (uint32_t)(stacks) + stackptr + STACK_SIZE - sizeof(uint32_t)    ) = (uint32_t)fun;
+    *(uint32_t*)     (  stack + STACK_SIZE - sizeof(uint32_t)   )    = (uint32_t)fun;
+
+    /*puts("  ");
+    hex((uint32_t)(stackptr) + STACK_SIZE - sizeof(uint32_t), str);
+    puts(str);
+    puts("  ");*/
+    
+    stackptr += STACK_SIZE;
+}
+
+
+void biff(){
+
+uint32_t counter = 0;
+    char str[10];
+    while(1){
+        hex(counter, str);
+        puts(str);
+        counter++;
+        yield();
     }
 }
 
-void kmemcpy(unsigned char* dst, unsigned char* src, int count){
-    while(count--){
-        *(dst++) = *(src++);
-    }
+void otherbiff(){
+    while(1){
+    puts("Thread 3");
+    yield();}
 }
 
-char* kstrcpy(char* dest, char* src){
-    char* ptr = dest;
-
-    while(*src){
-        *(dest++) = *(src++);
-    }
-
-    *dest = 0;
-
-    return ptr;
+void debug(){
+    char str[20];
+    hex(curTask->esp, str);
+    puts(str);
+    putch('\n');
 }
 
-void scroll(){
-    for(int i = 0; i < LINES - 1; i++){
-        kmemcpy(TEXT_BUFFER + CHARS_PER_LINE*i*2, TEXT_BUFFER + CHARS_PER_LINE*(i+1)*2, CHARS_PER_LINE * 2);    
-    }
 
-    kmemset(TEXT_BUFFER + (LINES-1)*CHARS_PER_LINE*2, 0, CHARS_PER_LINE * 2);
-}
+asm(".intel_syntax noprefix");
 
-void putch(int ch){
-    if(ch == 0x08){ //backspace
-        cursor_position--;
-    }
+//store processor state
+asm("yield:\n\t"
+    "   pushfd\n\t"
+    "   push ebp\n\t"
+    "   push edi\n\t"
+    "   push esi\n\t"
+    "   push edx\n\t"
+    "   push ecx\n\t"
+    "   push ebx\n\t"
+    "   push eax\n\t");
 
-    else if(ch == 0x09){
-        cursor_position++;
-    }
+//curTask->esp = esp
+asm("\n\tmov eax, DWORD PTR curTask\n\t"
+    "   mov DWORD PTR [eax], esp\n\t");
 
-    else if(ch == 0x0b){ //down one row
-        cursor_position += CHARS_PER_LINE;
-    }
+//curTask = curTask->next & esp = curTask->esp
+asm("\n\t\tmov eax, DWORD PTR curTask\n\t"
+    "   mov eax, DWORD PTR [eax+4]\n\t"
+    "   mov DWORD PTR curTask, eax\n\t"
+    "   mov eax, DWORD PTR curTask\n\t"
+    "   mov esp, DWORD PTR [eax]\n\t");
 
-    else if(ch == 0x0d){ //carriage return
-        cursor_position = (cursor_position - (cursor_position % CHARS_PER_LINE));
-    }
+//restore and return
+asm("   pop eax\n\t"
+    "   pop ebx\n\t"
+    "   pop ecx\n\t"
+    "   pop edx\n\t"
+    "   pop esi\n\t"
+    "   pop edi\n\t"
+    "   pop ebp\n\t"
+    "   popfd\n\t"
+    "   ret");
 
-    else if(ch == 0x0a){ //\n
-        cursor_position = 80 + (cursor_position - (cursor_position % CHARS_PER_LINE));
-    }
-
-    else{ //standard character
-        *(TEXT_BUFFER + cursor_position * 2) = ch;
-        *(TEXT_BUFFER + cursor_position * 2 + 1) = 0x0f;
-
-        cursor_position++;
-    }
-
-    if(cursor_position >= (CHARS_PER_LINE * LINES)){
-        scroll();
-        cursor_position -= CHARS_PER_LINE;
-    }
-}
-
-void puts(char* str){
-    while(*str){
-        putch(*(str++));
-    }
-}
-
-unsigned int ilog(unsigned int num, unsigned int base){
-    unsigned int t = 0;
-
-    while(num >= 1){
-        num /= base;
-        t++;
-    }
-
-    return t;
-}
-
-int ipow(unsigned int base, unsigned int power){
-    int t = 1;
-
-    while(power > 0){
-        power--;
-        t *= base;
-    }
-
-    return t;
-}
-
-char hexch(unsigned int num){ //for a number between 0 and 15, get the hex digit 0-f
-    if(num < 10){
-        return (char)(num + 48);
-    }
-    return (char)(num + 55);
-}
-
-int hex(unsigned int num, char* str){ //places hex of number into str
-    str[0] = '0';
-    str[1] = 'x';
-
-    //determine number of places and move backwards
-    unsigned int places = ilog(num, 16);
-    unsigned int i = 2;
-
-    while(places > 1){
-        unsigned int temp = ipow(16, places - 1);
-        unsigned int tmp = (num - (num % temp));
-        str[i] = hexch(tmp/temp);
-        num -= tmp;
-
-        places--;
-        i++;
-    }
-
-    str[i] = hexch(num);
-    str[i+1] = 0;
-
-    return i+1;
-}
+asm(".att_syntax prefix");
 
 void main(){
     char str[20];
-    hex(-2, str);
-    puts(str);
 
-    /**while(1){
-        puts("Hello, world from Protected Mode!\n");
-    }**/
+    init_heap(HEAP, TOTALHEAPSIZE);
+    
+    curTask = &mainTask;
+
+    mainTask.next = &otherTask;
+
+    createTask(&otherTask, biff);
+    createTask(&thirdTask, otherbiff);
+    otherTask.next = &thirdTask;
+    thirdTask.next = curTask;
+
+    while(1){
+        puts("Thread 1 about to yield\n");
+        yield();
+        puts("Task-switched back into thread 1\n");
+        
+        //SET_TCB(&tb);
+
+        //print_task_block(&tb);
+
+        //puts(str);
+        //putch('\n');
+    }
+}
+
+/**void tnt(){
+    size_t data[10];
+
+    yield();
+
+    kmemset(data, 0, sizeof(data));
+
+    bitarray_t bitarray;
+
+    bitarray.elements = 64;
+    bitarray.data = data;
+
+    for(int i = 0; i < 24; i++){
+        bitarray_set(&bitarray, i, true);
+    }
+
+    char str[20];
+    hex(0xDEADBEEF, str);
+
+    while(1){
+        hex(bitarray.data[0], str);
+        puts(str);
+        putch('\n');
+        getch();
+    }
 
     return;
-}
+}**/
