@@ -18,4 +18,5 @@ Current Status
 * Prints out strings, chars, hex numbers
 * Port I/O driver
 * Data structures - bit array
+* Kernel heap
 * Cooperative multitasking
