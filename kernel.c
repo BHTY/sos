@@ -1,3 +1,5 @@
+#pragma GCC diagnostic ignored "-Wint-conversion"
+
 #include "types.h"
 #include "string.h"
 #include "terminal.h"
@@ -5,13 +7,10 @@
 #include "8042.h"
 #include "heap.h"
 
-#define TOTALHEAPSIZE   16384
-uint8_t HEAP[16384];
+#define TOTALHEAPSIZE   65536
+uint32_t HEAP[16384];
 
-#define STACK_SIZE  512
-
-uint32_t stacks[16384];
-size_t stackptr = 0;
+#define STACK_SIZE  4096
 
 typedef struct task{
     uint32_t esp;
@@ -26,19 +25,45 @@ task thirdTask;
 
 void yield();
 void resume();
+void printhex(uint32_t hexnum);
+
+void print_TCB(task* ptr){
+    puts("\n");
+    printhex(ptr);
+    puts(" ptr->prev= ");
+    printhex(ptr->prev);
+    puts(" ptr->next= ");
+    printhex(ptr->next);
+    puts(" ptr->esp= ");
+    printhex(ptr->esp);
+}
+
+void printAllThreads(){
+    task* startingPtr = curTask;
+    task* curPtr = startingPtr;
+
+    while(1){
+        print_TCB(curPtr);
+        curPtr = curPtr->next;
+
+        if(curPtr == startingPtr){
+            break;
+        }
+    }
+}
 
 void thread_cleanup(){
     task* tmp = curTask;
 
     curTask->prev->next = curTask->next;
+    curTask->next->prev = curTask->prev;
+
     kfree(curTask->esp);
     curTask = curTask->next;
     kfree(tmp);
 
     //context switch into new curTask
     resume();
-
-    puts("AAAAAAAAAAAAAAAAAAAAAAAA");
 }
 
 void createTask(task* ptr, void (*fun)()){ //varargs
@@ -62,14 +87,17 @@ void createTask(task* ptr, void (*fun)()){ //varargs
     puts(str);
     puts("  ");*/
     
-    stackptr += STACK_SIZE;
+    //stackptr += STACK_SIZE;
 }
 
 
 void biff(){
 
-uint32_t counter = 0;
+    uint32_t counter = 0;
     char str[10];
+
+    //return;
+
     while(1){
         hex(counter, str);
         puts(str);
@@ -79,6 +107,8 @@ uint32_t counter = 0;
 }
 
 void otherbiff(){
+
+    //return;
 
     while(1){
         setcolor(0x02);
@@ -136,19 +166,21 @@ asm("   pop eax\n\t"
 
 asm(".att_syntax prefix");
 
-void main(){
-    char str[20];
+uint32_t globalesp;
 
-    init_heap(HEAP, TOTALHEAPSIZE);
+void main(){
+
+    //init_heap(HEAP, TOTALHEAPSIZE);
+    init_heap(0x100000, 0x100000);
 
     curTask = &mainTask;
 
-    mainTask.next = &otherTask;
-
     createTask(&otherTask, biff);
     createTask(&thirdTask, otherbiff);
+
+    mainTask.next = &otherTask;
     otherTask.next = &thirdTask;
-    thirdTask.next = curTask;
+    thirdTask.next = &mainTask;
 
     mainTask.prev = &thirdTask;
     otherTask.prev = &mainTask;

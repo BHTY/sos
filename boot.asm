@@ -8,7 +8,7 @@ mov [diskNum], dl
 push KERNEL_LOCATION ;address to store into
 push 0x00 ;head number
 push 0x0002 ;cylinder/sector number
-push 0x14 ;# of sectors
+push 0x20 ;# of sectors
 
 call loadsector
 
@@ -39,7 +39,7 @@ GDT_Start:
     data_descriptor:
         dw 0xffff
         dw 0
-        dw 0
+        db 0
         db 0x92
         db 0xcf
         db 0
@@ -65,14 +65,14 @@ loadsector:
 [bits 32]
 start_protected_mode:
     mov ax, DATA_SEG
-    ;mov ds, ax
-    ;mov ss, ax
-    ;mov es, ax
-    ;mov fs, ax
-    ;mov gs, ax
+    mov ds, ax
+    mov ss, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
 
-    ;mov ebp, 0x90000
-    ;mov esp, ebp
+    mov ebp, 0x90000
+    mov esp, ebp
     jmp CODE_SEG:KERNEL_LOCATION
 
 

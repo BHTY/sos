@@ -15,6 +15,27 @@ HEAPSIZE:
 heapStart:
 	.zero	4
 	.text
+	.globl	printhex
+	.type	printhex, @function
+printhex:
+	push	ebp
+	mov	ebp, esp
+	sub	esp, 24
+	sub	esp, 8
+	lea	eax, [ebp-18]
+	push	eax
+	push	DWORD PTR [ebp+8]
+	call	hex
+	add	esp, 16
+	sub	esp, 12
+	lea	eax, [ebp-18]
+	push	eax
+	call	puts
+	add	esp, 16
+	nop
+	leave
+	ret
+	.size	printhex, .-printhex
 	.globl	init_heap
 	.type	init_heap, @function
 init_heap:
@@ -54,26 +75,26 @@ kmalloc:
 	mov	eax, DWORD PTR [ebp+8]
 	and	eax, 3
 	test	eax, eax
-	je	.L3
+	je	.L4
 	mov	eax, DWORD PTR [ebp+8]
 	and	eax, -4
 	add	eax, 4
-	jmp	.L4
-.L3:
-	mov	eax, DWORD PTR [ebp+8]
+	jmp	.L5
 .L4:
+	mov	eax, DWORD PTR [ebp+8]
+.L5:
 	mov	DWORD PTR [ebp+8], eax
-.L12:
+.L13:
 	mov	eax, DWORD PTR [ebp-4]
 	mov	eax, DWORD PTR [eax]
 	test	eax, eax
-	jne	.L5
+	jne	.L6
 	mov	eax, DWORD PTR [ebp-4]
 	mov	eax, DWORD PTR [eax+4]
 	mov	edx, DWORD PTR [ebp+8]
 	add	edx, 16
 	cmp	eax, edx
-	jb	.L5
+	jb	.L6
 	mov	eax, DWORD PTR [ebp-4]
 	mov	eax, DWORD PTR [eax+4]
 	mov	DWORD PTR [ebp-8], eax
@@ -101,12 +122,12 @@ kmalloc:
 	mov	edx, DWORD PTR [ebp-4]
 	mov	DWORD PTR [eax+8], edx
 	cmp	DWORD PTR [ebp-12], 0
-	je	.L6
+	je	.L7
 	mov	eax, DWORD PTR [ebp-12]
 	mov	eax, DWORD PTR [eax]
 	test	eax, eax
-	je	.L7
-.L6:
+	je	.L8
+.L7:
 	mov	eax, DWORD PTR [ebp-16]
 	mov	edx, DWORD PTR [ebp-12]
 	mov	DWORD PTR [eax+12], edx
@@ -115,8 +136,8 @@ kmalloc:
 	lea	edx, [eax-16]
 	mov	eax, DWORD PTR [ebp-16]
 	mov	DWORD PTR [eax+4], edx
-	jmp	.L9
-.L7:
+	jmp	.L10
+.L8:
 	mov	eax, DWORD PTR [ebp-12]
 	mov	edx, DWORD PTR [eax+12]
 	mov	eax, DWORD PTR [ebp-16]
@@ -129,87 +150,99 @@ kmalloc:
 	add	edx, eax
 	mov	eax, DWORD PTR [ebp-16]
 	mov	DWORD PTR [eax+4], edx
-	jmp	.L9
-.L5:
+	jmp	.L10
+.L6:
 	mov	eax, DWORD PTR [ebp-4]
 	mov	eax, DWORD PTR [eax+12]
 	mov	DWORD PTR [ebp-4], eax
 	cmp	DWORD PTR [ebp-4], 0
-	jne	.L12
+	jne	.L13
 	mov	eax, 0
-	jmp	.L11
-.L9:
+	jmp	.L12
+.L10:
 	mov	eax, DWORD PTR [ebp-4]
 	add	eax, 16
-.L11:
+.L12:
 	leave
 	ret
 	.size	kmalloc, .-kmalloc
+	.section	.rodata
+.LC0:
+	.string	"\n\n"
+	.text
 	.globl	kfree
 	.type	kfree, @function
 kfree:
 	push	ebp
 	mov	ebp, esp
-	sub	esp, 16
+	sub	esp, 24
 	mov	eax, DWORD PTR [ebp+8]
 	sub	eax, 16
-	mov	DWORD PTR [ebp-4], eax
-	mov	eax, DWORD PTR [ebp-4]
+	mov	DWORD PTR [ebp-12], eax
+	mov	eax, DWORD PTR [ebp-12]
 	mov	eax, DWORD PTR [eax+8]
-	test	eax, eax
-	je	.L14
-	mov	eax, DWORD PTR [ebp-4]
-	mov	eax, DWORD PTR [eax+8]
-	mov	eax, DWORD PTR [eax]
-	test	eax, eax
-	jne	.L14
-	mov	eax, DWORD PTR [ebp-4]
-	mov	eax, DWORD PTR [eax+8]
-	mov	edx, DWORD PTR [ebp-4]
-	mov	edx, DWORD PTR [edx+12]
-	mov	DWORD PTR [eax+12], edx
-	mov	eax, DWORD PTR [ebp-4]
-	mov	eax, DWORD PTR [eax+8]
-	mov	edx, DWORD PTR [eax+4]
-	mov	eax, DWORD PTR [ebp-4]
-	mov	eax, DWORD PTR [eax+4]
-	add	edx, eax
-	mov	eax, DWORD PTR [ebp-4]
-	mov	eax, DWORD PTR [eax+8]
-	add	edx, 16
-	mov	DWORD PTR [eax+4], edx
-	mov	eax, DWORD PTR [ebp-4]
-	mov	eax, DWORD PTR [eax+8]
-	mov	DWORD PTR [ebp-4], eax
-.L14:
-	mov	eax, DWORD PTR [ebp-4]
-	mov	eax, DWORD PTR [eax+12]
 	test	eax, eax
 	je	.L15
-	mov	eax, DWORD PTR [ebp-4]
-	mov	eax, DWORD PTR [eax+12]
+	mov	eax, DWORD PTR [ebp-12]
+	mov	eax, DWORD PTR [eax+8]
 	mov	eax, DWORD PTR [eax]
 	test	eax, eax
 	jne	.L15
-	mov	eax, DWORD PTR [ebp-4]
+	mov	eax, DWORD PTR [ebp-12]
+	mov	eax, DWORD PTR [eax+8]
+	mov	edx, DWORD PTR [ebp-12]
+	mov	edx, DWORD PTR [edx+12]
+	mov	DWORD PTR [eax+12], edx
+	mov	eax, DWORD PTR [ebp-12]
+	mov	eax, DWORD PTR [eax+8]
 	mov	edx, DWORD PTR [eax+4]
-	mov	eax, DWORD PTR [ebp-4]
+	mov	eax, DWORD PTR [ebp-12]
+	mov	eax, DWORD PTR [eax+4]
+	add	edx, eax
+	mov	eax, DWORD PTR [ebp-12]
+	mov	eax, DWORD PTR [eax+8]
+	add	edx, 16
+	mov	DWORD PTR [eax+4], edx
+	mov	eax, DWORD PTR [ebp-12]
+	mov	eax, DWORD PTR [eax+8]
+	mov	DWORD PTR [ebp-12], eax
+.L15:
+	mov	eax, DWORD PTR [ebp-12]
+	mov	eax, DWORD PTR [eax+12]
+	test	eax, eax
+	je	.L16
+	mov	eax, DWORD PTR [ebp-12]
+	mov	eax, DWORD PTR [eax+12]
+	mov	eax, DWORD PTR [eax]
+	test	eax, eax
+	jne	.L16
+	mov	eax, DWORD PTR [ebp-12]
+	mov	edx, DWORD PTR [eax+4]
+	mov	eax, DWORD PTR [ebp-12]
 	mov	eax, DWORD PTR [eax+12]
 	mov	eax, DWORD PTR [eax+4]
 	add	eax, edx
 	lea	edx, [eax+16]
-	mov	eax, DWORD PTR [ebp-4]
+	mov	eax, DWORD PTR [ebp-12]
 	mov	DWORD PTR [eax+4], edx
-	mov	eax, DWORD PTR [ebp-4]
+	mov	eax, DWORD PTR [ebp-12]
 	mov	eax, DWORD PTR [eax+12]
 	mov	edx, DWORD PTR [eax+12]
-	mov	eax, DWORD PTR [ebp-4]
+	mov	eax, DWORD PTR [ebp-12]
 	mov	DWORD PTR [eax+12], edx
-.L15:
-	mov	eax, DWORD PTR [ebp-4]
+.L16:
+	mov	eax, DWORD PTR [ebp-12]
 	mov	DWORD PTR [eax], 0
-	nop
-	leave
-	ret
+	sub	esp, 12
+	push	OFFSET FLAT:.LC0
+	call	puts
+	add	esp, 16
+	mov	eax, DWORD PTR [ebp+8]
+	sub	esp, 12
+	push	eax
+	call	printhex
+	add	esp, 16
+.L17:
+	jmp	.L17
 	.size	kfree, .-kfree
 	.ident	"GCC: (GNU) 10.2.0"

@@ -1,6 +1,7 @@
 #include "types.h"
 #include "heap.h"
 #include "string.h"
+#include "terminal.h"
 
 #define ALIGNMENT   4
 #define align(x)	(((x % 4) == 0) ? x : (x + 4) - x % 4)
@@ -15,6 +16,13 @@ typedef struct MemBlock{
 	struct MemBlock *next;
 	uint8_t data[0];
 } MemBlock;
+
+
+void printhex(uint32_t hexnum){
+    char str[10];
+    hex(hexnum, str);
+    puts(str);
+}
 
 void init_heap(void* start, size_t length){
 	MemBlock temp;
