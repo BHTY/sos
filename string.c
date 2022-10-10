@@ -1,5 +1,14 @@
 #include "types.h"
 
+size_t strlen(char *str)
+{
+    size_t retval;
+    
+    for (retval = 0; *str; str++) retval++;
+    
+    return retval;
+}
+
 void kmemset(unsigned char* ptr, unsigned char value, size_t num){
     while(num--){
         *(ptr++) = value;

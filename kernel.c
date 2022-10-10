@@ -66,47 +66,34 @@ void thread_cleanup(){
     resume();
 }
 
-void createTask(task* ptr, void (*fun)()){ //varargs
-    char str[20];
+void createTask(task* ptr, void (*fun)(), void* arg){ 
     uint32_t stack = kmalloc(STACK_SIZE);
-
-    //push EIP, EFLAGS, EBP, EDI, ESI, EDX, ECX, EBX, EAX
-    //ptr->esp = stackptr + STACK_SIZE - 9 * sizeof(uint32_t);
-    //ptr->esp += (uint32_t)stacks;
     
-    ptr->esp = stack + STACK_SIZE - 10*sizeof(uint32_t);
-    
+    ptr->esp = stack + STACK_SIZE - 11*sizeof(uint32_t);
     ptr->next = 0;
 
-    //*(uint32_t*)   (  (uint32_t)(stacks) + stackptr + STACK_SIZE - sizeof(uint32_t)    ) = (uint32_t)fun;
-    *(uint32_t*)     (  stack + STACK_SIZE - 2 * sizeof(uint32_t)   )    = (uint32_t)fun;
-    *(uint32_t*)     (  stack + STACK_SIZE - 1 * sizeof(uint32_t)   )    = (uint32_t)thread_cleanup;
-
-    /*puts("  ");
-    hex((uint32_t)(stackptr) + STACK_SIZE - sizeof(uint32_t), str);
-    puts(str);
-    puts("  ");*/
-    
-    //stackptr += STACK_SIZE;
+    *(uint32_t*)     (  stack + STACK_SIZE - 1 * sizeof(uint32_t)   )    = (uint32_t)arg;
+    *(uint32_t*)     (  stack + STACK_SIZE - 3 * sizeof(uint32_t)   )    = (uint32_t)fun;
+    *(uint32_t*)     (  stack + STACK_SIZE - 2 * sizeof(uint32_t)   )    = (uint32_t)thread_cleanup;
 }
 
 
-void biff(){
+void biff(size_t var){
 
-    uint32_t counter = 0;
     char str[10];
 
     //return;
+    var = 511;
 
     while(1){
-        hex(counter, str);
+        hex(var, str);
         puts(str);
-        counter++;
+        //var++;
         yield();
     }
 }
 
-void otherbiff(){
+void otherbiff(void* var){
 
     //return;
 
@@ -175,8 +162,8 @@ void main(){
 
     curTask = &mainTask;
 
-    createTask(&otherTask, biff);
-    createTask(&thirdTask, otherbiff);
+    createTask(&otherTask, biff, 0);
+    createTask(&thirdTask, otherbiff, 0);
 
     mainTask.next = &otherTask;
     otherTask.next = &thirdTask;
@@ -188,7 +175,7 @@ void main(){
 
     while(1){
         setcolor(0x02);
-        puts("THREAD 1: ");
+        kprintf("THREAD %d: ", 1);
         setcolor(0x04);
         puts("YIELDING\n");
         yield();

@@ -1,6 +1,7 @@
 #include "types.h"
 #include "string.h"
 #include "ports.h"
+#include "stdarg.h"
 
 #define TEXT_BUFFER (char*)0xb8000
 #define CHARS_PER_LINE 80
@@ -120,3 +121,106 @@ int32_t hex(uint32_t num, char* str){ //places hex of number into str
     return i+1;
 }
 
+int32_t numtostr(uint8_t *str, int num, int base, int sign){ //0=unsigned, 1=signed
+	uint32_t i;
+	
+	if (sign && (num < 0)){
+		str[0] = '-';
+		i = 1;
+		num = ~num + 1;
+	}
+	else{
+		i = 0;
+	}
+
+	uint32_t places = ilog(num, base);
+
+	while (places > 1){
+		uint32_t temp = ipow(base, places - 1);
+		uint32_t tmp = (num - (num % temp));
+		str[i] = hexch(tmp / temp);
+		num -= tmp;
+
+		places--;
+		i++;
+	}
+
+	str[i] = hexch(num);
+	str[i + 1] = 0;
+
+	return i + 1;
+}
+
+int ksprintf(uint8_t *buf, uint8_t *fmt, va_list args){
+
+	uint8_t *str;
+	uint16_t i;
+	uint16_t len;
+	uint8_t *s;
+
+	for (str = buf; *fmt; ++fmt){
+
+		if (*fmt != '%'){
+			*str++ = *fmt;
+			continue;
+		}
+
+		fmt++;
+
+		switch (*fmt){
+			case 'c':
+				*str++ = (uint8_t)va_arg(args, int);
+				break;
+			case 's':
+				s = va_arg(args, uint8_t*);
+				len = strlen(s);
+				for (i = 0; i < len; ++i) *str++ = *s++;
+				break;
+			case 'o':
+				break;
+			case 'x':
+				str += numtostr(str, va_arg(args, size_t), 16, 0);
+				break;
+			case 'X':
+				str += numtostr(str, va_arg(args, size_t), 16, 1);
+				break;
+			case 'p':
+				str += numtostr(str, va_arg(args, size_t), 16, 0);
+				break;
+			case 'd':
+			case 'i':
+				str += numtostr(str, va_arg(args, size_t), 10, 1);
+				break;
+			case 'u':
+				str += numtostr(str, va_arg(args, size_t), 10, 0);
+				break;
+			case 'b':
+				str += numtostr(str, va_arg(args, size_t), 2, 0);
+				break;
+			case 'B':
+				str += numtostr(str, va_arg(args, size_t), 2, 1);
+				break;
+			default:
+				break;
+		}
+
+	}
+
+	*str = 0;
+
+	return str - buf;
+
+}
+
+int kprintf(uint8_t *fmt, ...){
+	uint8_t buf[1024];
+
+	va_list args;
+	int i;
+	va_start(args, fmt);
+	i = ksprintf(buf, fmt, args);
+	va_end(args);
+	buf[i] = '\0';
+	puts(buf);
+	return i;
+}
