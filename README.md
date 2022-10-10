@@ -4,7 +4,6 @@ Basic pmode operating system
 Version 0.2 (in progress) tasks
 * Mutexes and atomic values (using LOCK)
 * Message passing / message queues - the message queue is a linked list that contains a sender PID and a void* message (recipient ID of -1 is a systemwide broadcast)
-* Process diagnostics prints all registers (except EBP)
 * ATA/IDE PIO driver
 * PS/2 mouse driver
 
