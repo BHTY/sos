@@ -90,6 +90,22 @@ void main(){ //console commands - ver and proc
             send_message(curTask->next, 0xDEADBEEF);
             while(!pop_message(&msg));
             kprintf("Response: %x\n", msg.data);
+        }else if(strcmp(buf, "mem") == 0){
+            printBlocks();
+        }else if(strcmp(buf, "crash") == 0){
+            asm(".intel_syntax noprefix");
+            asm("JMP 0xFFFF:0");
+            asm(".att_syntax prefix");
+        }else if(strcmp(buf, "help") == 0){
+            puts("If you're using this, you should really be able to help yourself\nBut just in case...\n");
+            puts("ver - prints out version number information\n");
+            puts("proc - prints out information on running threads\n");
+            puts("mem - prints out memory usage information\n");
+            puts("pause - Pauses the counter running in the upper right-hand corner of the screen\n");
+            puts("resume - Resumes the counter if paused\n");
+            puts("count - Sends a message to the counter thread then waits for a response back\n");
+            puts("crash - Go figure.\n");
+            puts("help - Imagine that.\n");
         }
 
         line++;

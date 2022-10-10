@@ -17,6 +17,29 @@ typedef struct MemBlock{
 	uint8_t data[0];
 } MemBlock;
 
+void printBlock(MemBlock *blk){
+	if(blk->used){
+		puts("USED ");
+	}
+	else{
+		puts("FREE ");
+	}
+	kprintf("%p: %d bytes\n", blk->data, blk->size);
+}
+
+void printBlocks(){
+	MemBlock *blk = heapStart;
+
+	while(1){
+		printBlock(blk);
+		blk = blk->next;
+
+		if(!blk){
+			break;
+		}
+	}
+}
+
 
 void printhex(uint32_t hexnum){
     char str[10];

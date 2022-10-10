@@ -97,7 +97,7 @@ void thread_cleanup(){
     curTask->prev->next = curTask->next;
     curTask->next->prev = curTask->prev;
 
-    kfree(curTask->esp);
+    kfree(curTask->stack);
     curTask = curTask->next;
     kfree(tmp);
 
@@ -109,6 +109,7 @@ void createTask(task* ptr, void (*fun)(), void* arg){
     uint32_t stack = kmalloc(STACK_SIZE);
     
     ptr->esp = stack + STACK_SIZE - 11*sizeof(uint32_t);
+    ptr->stack = stack;
 
     *(uint32_t*)     (  stack + STACK_SIZE - 1 * sizeof(uint32_t)   )    = (uint32_t)arg;
     *(uint32_t*)     (  stack + STACK_SIZE - 3 * sizeof(uint32_t)   )    = (uint32_t)fun;

@@ -2,6 +2,7 @@
 #define __HEAP_H
 #include "types.h"
 
+void printBlocks();
 void init_heap(void*, size_t);
 void* kmalloc(size_t);
 void kfree(void*);

@@ -11,6 +11,7 @@ typedef struct task{
     struct task* next;
     struct task* prev;
     struct message_t *msg;
+    uint32_t stack;
 } task;
 
 typedef struct{
