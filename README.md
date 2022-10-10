@@ -2,8 +2,6 @@
 Basic pmode operating system
 
 Version 0.2 (in progress) tasks
-* Mutexes and atomic values (using LOCK)
-* Message passing / message queues - the message queue is a linked list that contains a sender PID and a void* message (recipient ID of -1 is a systemwide broadcast)
 * ATA/IDE PIO driver
 * PS/2 mouse driver
 
@@ -12,6 +10,7 @@ Version 0.3 tasks
 * Filesystem driver
 * Executable loader
 * VM86 monitor
+* Make the message passing not suck ass (add PIDs/TIDs for sender/receiver instead of slinging around task* pointers, make messages atomic, add -1 for systemwide broadcast)
 
 Version 0.4 tasks
 * VESA VCI driver
@@ -30,3 +29,4 @@ Current Status
 * Kernel heap
 * Cooperative multitasking (thread_cleanup function)
 * PS/2 keyboard driver
+* Basic interthread message passing (message queue is a linked list of messages with a sender and void* message)
