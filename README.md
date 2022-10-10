@@ -29,4 +29,5 @@ Current Status
 * Kernel heap
 * Cooperative multitasking (thread_cleanup function)
 * PS/2 keyboard driver
+* Mutexes and shitty atomic variables
 * Basic interthread message passing (message queue is a linked list of messages with a sender and void* message)
