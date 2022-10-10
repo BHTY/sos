@@ -4,8 +4,7 @@ Basic pmode operating system
 Tasks (no particular order)
 1. Timer interrupt (make IDT, reprogram PIT to higher frequency) -> multithreading/multitasking! (+ message passing)
 2. PS/2 keyboard driver
-3. Varargs for thread initialization
-4. ATA/IDE PIO driver
+3. ATA/IDE PIO driver
 
 Others: VESA, libc
 
