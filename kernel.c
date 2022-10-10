@@ -17,15 +17,29 @@ void clearscreen(){
 }
 
 uint8_t kill = 0;
+mutex_t m;
+
+extern task* curTask;
 
 void bg(size_t arg){
     uint16_t oldpos = 0;
     uint16_t counter = 0;
+    message_t msg;
 
     while(1){
         if(kill){
             return;
         }
+
+        if(pop_message(&msg)){
+            if(msg.data == 0xDEADBEEF){
+                puts("TIMER: Message acknowledged, sending response.\n");
+                send_message(curTask->next, counter);
+            }
+        }
+
+        acquire_mutex(&m);
+        release_mutex(&m);
 
         setcolor(0x04);
         oldpos = getpos();
@@ -38,6 +52,7 @@ void bg(size_t arg){
 
 void main(){ //console commands - ver and proc
 
+    message_t msg;
     uint8_t line = 1;
     char buf[100];
 
@@ -55,6 +70,7 @@ void main(){ //console commands - ver and proc
     while(1){
         setcolor(0x0E);
         puts("cmd> ");
+        setcolor(0x04);
         gets(buf);
         setcolor(0x02);
 
@@ -65,9 +81,19 @@ void main(){ //console commands - ver and proc
             printTasks();
         }else if(strcmp(buf, "kill") == 0){
             kill = 1;
+        }else if(strcmp(buf, "pause") == 0){
+            acquire_mutex(&m);
+        }else if(strcmp(buf, "resume") == 0){
+            release_mutex(&m);
+        }else if(strcmp(buf, "count") == 0){
+            kprintf("Sending message to counter thread, receiving message back with counter status\n");
+            send_message(curTask->next, 0xDEADBEEF);
+            while(!pop_message(&msg));
+            kprintf("Response: %x\n", msg.data);
         }
 
         line++;
+
         yield();
         
         //SET_TCB(&tb);

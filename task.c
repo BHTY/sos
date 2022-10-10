@@ -2,10 +2,11 @@
 #include "heap.h"
 #include "types.h"
 #include "terminal.h"
+#include "string.h"
 
 task* curTask;
 
-void acquire_mutex(mutex_t *p){
+void acquire_mutex(volatile mutex_t *p){
     while(*p){
         yield();
     }
@@ -16,6 +17,64 @@ void release_mutex(mutex_t *p){
     if(*p == curTask){
         *p = 0;
     }
+}
+
+void atomic_set(atomic_t *p, void *value){ //use LOCK
+    acquire_mutex(&(p->lock));
+
+    asm(".intel_syntax noprefix");
+        asm("mov eax, DWORD PTR [ebp+8]\n\t");
+        asm("mov esi, DWORD PTR [ebp+12]\n\t");
+        asm("mov edi, DWORD PTR [eax]\n\t");
+        asm("mov ecx, DWORD PTR [eax+4]\n\t");
+        asm("rep movsb");
+    asm(".att_syntax prefix");
+    
+    release_mutex(&(p->lock));
+}
+
+void atomic_read(atomic_t *p, void *value){ //use LOCK
+    acquire_mutex(&(p->lock));
+    
+    asm(".intel_syntax noprefix");
+        asm("mov eax, DWORD PTR [ebp+8]\n\t");
+        asm("mov edi, DWORD PTR [ebp+12]\n\t");
+        asm("mov esi, DWORD PTR [eax]\n\t");
+        asm("mov ecx, DWORD PTR [eax+4]\n\t");
+        asm("rep movsb");
+    asm(".att_syntax prefix");
+
+    release_mutex(&(p->lock));
+}
+
+void send_message(task *recipient, void *contents){
+    message_t **msg = &(recipient->msg);
+    
+    while(*msg){
+        yield();
+        msg = (*msg)->next;
+    }
+
+    *msg = kmalloc(sizeof(message_t));
+    (*msg)->next = 0;
+    (*msg)->sender = curTask;
+    (*msg)->data = contents;
+}
+
+bool pop_message(message_t *msg){
+    yield();
+
+    if(curTask->msg){
+
+        message_t *oldmsg = curTask->msg;
+
+        kmemcpy(msg, curTask->msg, sizeof(message_t));
+        curTask->msg = curTask->msg->next;
+        kfree(oldmsg);
+
+        return 1;
+    }
+    return 0;
 }
 
 void printTask(task* ptr){
