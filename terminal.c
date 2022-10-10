@@ -201,6 +201,7 @@ int ksprintf(uint8_t *buf, uint8_t *fmt, va_list args){
 				str += numtostr(str, va_arg(args, size_t), 2, 1);
 				break;
 			default:
+                *str++ = '%';
 				break;
 		}
 
