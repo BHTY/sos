@@ -15,4 +15,5 @@ void init_tasking();
 void yield();
 void resume();
 void createTask(task* ptr, void (*fun)(), void* arg);  
+void printTasks();
 #endif

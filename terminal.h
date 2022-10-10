@@ -6,3 +6,5 @@ char hexch(uint8_t num);
 int32_t hex(uint32_t num, char* str);
 void setcolor(uint8_t col);
 int kprintf(uint8_t *fmt, ...);
+void gotoxy(uint8_t x, uint8_t y);
+uint16_t getpos();

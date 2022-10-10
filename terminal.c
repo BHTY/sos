@@ -8,7 +8,15 @@
 #define LINES 25
 
 uint8_t COLOR_ATTR = 0x20;
-int cursor_position = 0;
+uint16_t cursor_position = 0;
+
+void gotoxy(uint8_t x, uint8_t y){
+	cursor_position = CHARS_PER_LINE * y + x;
+}
+
+uint16_t getpos(){
+	return cursor_position;
+}
 
 void setcolor(uint8_t col){
     COLOR_ATTR = col;
@@ -30,6 +38,11 @@ void putch(char ch){
     else if(ch == 0x09){
         cursor_position++;
     }
+
+	else if(ch == 0x08){
+		cursor_position--;
+		*(TEXT_BUFFER + cursor_position * 2) = 255;
+	}
 
     else if(ch == 0x0b){ //down one row
         cursor_position += CHARS_PER_LINE;

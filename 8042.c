@@ -4,6 +4,7 @@
 
 #include "types.h"
 #include "ports.h"
+#include "terminal.h"
 
 static char kbdus[128] = 
 {
@@ -167,4 +168,35 @@ char getch(){
 	}
 
 	return 0;
+}
+
+void gets(char *buf)
+{
+	int remaining_chars = 63;
+	while (remaining_chars)
+	{
+		char ch = getch();
+
+		if(ch != 0 && ch != '\b'){
+			putch(ch);
+
+			if(ch != '\n'){
+				buf[63 - remaining_chars] = ch;
+				remaining_chars--;
+			}
+		}
+
+		if(ch == '\b'){
+			putch(ch);
+			remaining_chars++;
+			buf[63 - remaining_chars] = 0;
+		}
+
+		if (ch == '\n')
+		{
+			break;
+		}
+	}
+
+	buf[63 - remaining_chars] = 0;
 }

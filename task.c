@@ -1,8 +1,23 @@
 #include "task.h"
 #include "heap.h"
 #include "types.h"
+#include "terminal.h"
 
 task* curTask;
+
+void printTask(task* ptr){
+    kprintf("%p ESP=%p EBP=%p EAX=%p EBX=%p ECX=%p\n", ptr, ptr->esp, -1, -1, -1, -1);
+    kprintf(" EDX=%p ESI=%p EDI=%p EFLAGS=%b\n", -1, -1, -1, -1);
+}
+
+void printTasks(){ //print address, reg contents
+    task* ptr = curTask;
+
+    do{
+        printTask(ptr);
+        ptr = ptr->next;
+    }while(ptr != curTask);
+}
 
 void thread_cleanup(){
     task* tmp = curTask;

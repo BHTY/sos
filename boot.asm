@@ -49,7 +49,6 @@ GDT_Descriptor:
     dw GDT_End - GDT_Start - 1 ;size
     dd GDT_Start ;start
 
-
 loadsector:
     mov BP, SP
     mov al, BYTE [BP+0x02] ;# of sectors to read
