@@ -5,9 +5,22 @@
 
 task* curTask;
 
+void acquire_mutex(mutex_t *p){
+    while(*p){
+        yield();
+    }
+    *p = curTask;
+}
+
+void release_mutex(mutex_t *p){
+    if(*p == curTask){
+        *p = 0;
+    }
+}
+
 void printTask(task* ptr){
-    kprintf("%p ESP=%p EBP=%p EAX=%p EBX=%p ECX=%p\n", ptr, ptr->esp, -1, -1, -1, -1);
-    kprintf(" EDX=%p ESI=%p EDI=%p EFLAGS=%b\n", -1, -1, -1, -1);
+    kprintf("%p ESP=%p EIP=%p EAX=%p EBX=%p ECX=%p\n", ptr, ptr->esp + 36, *(uint32_t*)(ptr->esp+32), *(uint32_t*)(ptr->esp), *(uint32_t*)(ptr->esp+4), *(uint32_t*)(ptr->esp+8));
+    kprintf(" EDX=%p ESI=%p EDI=%p EFLAGS=%b\n", *(uint32_t*)(ptr->esp+12), *(uint32_t*)(ptr->esp+16), *(uint32_t*)(ptr->esp+20), *(uint32_t*)(ptr->esp+28));
 }
 
 void printTasks(){ //print address, reg contents

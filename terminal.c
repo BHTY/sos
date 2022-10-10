@@ -12,6 +12,11 @@ uint16_t cursor_position = 0;
 
 void gotoxy(uint8_t x, uint8_t y){
 	cursor_position = CHARS_PER_LINE * y + x;
+    //set cursor position
+    io_write_8(0x3D4, 14);
+    io_write_8(0x3D5, cursor_position >> 8);
+    io_write_8(0x3D4, 15);
+    io_write_8(0x3D5, cursor_position);
 }
 
 uint16_t getpos(){

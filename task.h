@@ -10,6 +10,10 @@ typedef struct task{
     struct task* prev;
 } task;
 
+typedef volatile uint32_t mutex_t;
+
+void acquire_mutex(mutex_t *p);
+void release_mutex(mutex_t *p);
 void spawnThread(void (*fun)(), void* arg);
 void init_tasking();
 void yield();

@@ -16,14 +16,20 @@ void clearscreen(){
     }
 }
 
+uint8_t kill = 0;
+
 void bg(size_t arg){
     uint16_t oldpos = 0;
     uint16_t counter = 0;
 
     while(1){
+        if(kill){
+            return;
+        }
+
         setcolor(0x04);
         oldpos = getpos();
-        gotoxy(76, 0);
+        gotoxy(arg, 0);
         kprintf("%x", counter++);
         gotoxy(oldpos-(80*(oldpos/80)), oldpos/80);
         yield();
@@ -32,18 +38,18 @@ void bg(size_t arg){
 
 void main(){ //console commands - ver and proc
 
-    char buf[100];
     uint8_t line = 1;
+    char buf[100];
 
     clearscreen();
 
     init_heap(0x100000, 0x100000);
 
     init_tasking();
-    spawnThread(bg, 0);
+    spawnThread(bg, 76);
 
     setcolor(0x0B);
-    puts("Welcome to POS 0.01!\n");
+    puts("Welcome to POS 0.20!\n");
     setcolor(0x0E);
 
     while(1){
@@ -53,10 +59,12 @@ void main(){ //console commands - ver and proc
         setcolor(0x02);
 
         if(strcmp(buf, "ver") == 0){
-            puts("POS 0.01 by Will Klees (2022)\n");
+            puts("POS 0.20 by Will Klees (2022)\n");
         }
         else if(strcmp(buf, "proc") == 0){
             printTasks();
+        }else if(strcmp(buf, "kill") == 0){
+            kill = 1;
         }
 
         line++;
