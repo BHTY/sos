@@ -35,7 +35,7 @@ void atomic_read(atomic_t *p, void *value);
 void atomic_set(atomic_t *p, void *value);
 void acquire_mutex(mutex_t *p);
 void release_mutex(mutex_t *p);
-void spawnThread(void (*fun)(), void* arg);
+task* spawnThread(void (*fun)(), void* arg);
 void init_tasking();
 void yield();
 void resume();

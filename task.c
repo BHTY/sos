@@ -122,10 +122,13 @@ void init_tasking(){
     curTask->prev = curTask;
 }
 
-void spawnThread(void (*fun)(), void* arg){ 
+task* spawnThread(void (*fun)(), void* arg){ 
     task* temp = curTask->next;
     curTask->next = kmalloc(sizeof(task));
     curTask->next->prev = curTask;
     curTask->next->next = temp;
+    //curTask->next->next->prev = 
     createTask(curTask->next, fun, arg);
+
+    return curTask->next;
 }

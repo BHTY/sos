@@ -44,11 +44,6 @@ void putch(char ch){
         cursor_position++;
     }
 
-	else if(ch == 0x08){
-		cursor_position--;
-		*(TEXT_BUFFER + cursor_position * 2) = 255;
-	}
-
     else if(ch == 0x0b){ //down one row
         cursor_position += CHARS_PER_LINE;
     }

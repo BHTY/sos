@@ -187,8 +187,12 @@ void gets(char *buf)
 		}
 
 		if(ch == '\b'){
-			putch(ch);
-			remaining_chars++;
+			if(remaining_chars < 63){
+				putch(ch);
+				remaining_chars++;
+				putch(' ');
+				putch(ch);
+			}
 			buf[63 - remaining_chars] = 0;
 		}
 
