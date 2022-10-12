@@ -1,7 +1,7 @@
 # sos
 Basic pmode operating system
 
-Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" when done
+Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" and separate into v0.2 branch when done
 * ATA/IDE PIO driver
 * Fix scheduler bugs
 
