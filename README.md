@@ -1,16 +1,24 @@
 # sos
 Basic pmode operating system
 
-Version 0.2 (in progress) tasks
+Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" when done
 * ATA/IDE PIO driver
+* Fix scheduler bugs
 
 Version 0.3 tasks
 * Preemptive multitasking (timer interrupt - make IDT, reprogram PIT to higher frequency)
 * Filesystem driver
-* Executable loader
+* Executable loader (decide on relocations vs PIC)
 * VM86 monitor
 * PS/2 mouse driver
 * Make the message passing not suck ass (add PIDs/TIDs for sender/receiver instead of slinging around task* pointers, make messages atomic, add -1 for systemwide broadcast)
+* Basic terminal (no scripting capabilities - yet)
+* * ver
+* * cd
+* * ls
+* * mkd
+* * del
+* * <app name> - execs app
 
 Version 0.4 tasks
 * VESA VCI driver
@@ -29,5 +37,6 @@ Current Status
 * Kernel heap
 * Cooperative multitasking (thread_cleanup function)
 * PS/2 keyboard driver
-* Mutexes and shitty atomic variables
+* Mutexes and shitty atomic variables (basically variables with getters and setters protected by a mutex)
 * Basic interthread message passing (message queue is a linked list of messages with a sender and void* message)
+* Stack trace (return addresses only - no function names or local vars)
