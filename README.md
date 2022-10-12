@@ -3,7 +3,7 @@ Basic pmode operating system
 
 Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" and separate into v0.2 branch when done
 * ATA/IDE PIO driver
-* Fix scheduler bugs
+* Fix scheduler bugs (ejecting threads that shouldn't be ejected)
 
 Version 0.3 tasks
 * Preemptive multitasking (timer interrupt - make IDT, reprogram PIT to higher frequency)
