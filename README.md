@@ -5,12 +5,9 @@ Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" a
 * ATA/IDE PIO driver
 * Fix scheduler bugs (ejecting threads that shouldn't be ejected)
 
-Version 0.3 tasks
-* Preemptive multitasking (timer interrupt - make IDT, reprogram PIT to higher frequency)
+Version 0.3 Tasks
 * Filesystem driver
-* Executable loader (decide on relocations vs PIC)
-* VM86 monitor
-* PS/2 mouse driver
+- Executable loader (decide on relocations vs PIC)
 * Make the message passing not suck ass (add PIDs/TIDs for sender/receiver instead of slinging around task* pointers, make messages atomic, add -1 for systemwide broadcast)
 * Basic terminal (no scripting capabilities - yet)
 * * ver
@@ -21,6 +18,13 @@ Version 0.3 tasks
 * * <app name> - execs app
 
 Version 0.4 tasks
+* Preemptive multitasking (timer interrupt - make IDT, reprogram PIT to higher frequency)
+* Filesystem driver
+* Executable loader (decide on relocations vs PIC)
+* VM86 monitor
+* PS/2 mouse driver
+
+Version 0.5 tasks
 * VESA VCI driver
 * Graphical terminal & demos
 * Begin windowing system
