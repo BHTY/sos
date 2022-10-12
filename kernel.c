@@ -103,7 +103,7 @@ void DVD(size_t arg){
         _3 = textptr[(y+1) * 80 + x];
         _4 = textptr[(y+1) * 80 + x+1];
 
-        textptr[y * 80 + x] = 0x4444;   
+        textptr[y * 80 + x] = 0x4444;
         textptr[y * 80 + x+1] = 0x2222;
         textptr[(y+1) * 80 + x] = 0x1111;
         textptr[(y+1) * 80 + x+1] = 0xEEEE;     
@@ -119,7 +119,7 @@ void main(){ //console commands - ver and proc
 
     message_t msg;
     uint8_t line = 1;
-    char buf[100];
+    char buf[80];
 
     clearscreen();
 
@@ -143,6 +143,7 @@ void main(){ //console commands - ver and proc
             puts("POS 0.20 by Will Klees (2022)\n");
         }
         else if(strcmp(buf, "proc") == 0){
+            yield();
             printTasks();
         }else if(strcmp(buf, "kill") == 0){
             kill = 1;
@@ -165,6 +166,9 @@ void main(){ //console commands - ver and proc
             spawnThread(DVD, 0);
         }else if(strcmp(buf, "mem") == 0){
             printBlocks();
+        }else if(strcmp(buf, "trace") == 0){
+            yield();
+            trace(curTask->next);
         }else if(strcmp(buf, "crash") == 0){
             asm(".intel_syntax noprefix");
             asm("JMP 0xFFFF:0");

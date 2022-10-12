@@ -19,6 +19,21 @@ void release_mutex(mutex_t *p){
     }
 }
 
+void* atomic_read_lock(atomic_t *p){
+    acquire_mutex(&(p->lock));
+    return p->data;
+}
+
+void atomic_set_release(atomic_t *p, void *value){
+    while(p->lock != curTask){
+        yield();
+    }
+
+    p->data = value;
+
+    release_mutex(&(p->lock));
+}
+
 void atomic_set(atomic_t *p, void *value){ //use LOCK
     acquire_mutex(&(p->lock));
 
@@ -89,6 +104,21 @@ void printTasks(){ //print address, reg contents
         printTask(ptr);
         ptr = ptr->next;
     }while(ptr != curTask);
+}
+
+void trace(task* tsk){
+    uint32_t EBP = *(uint32_t*)(tsk->esp + 24);
+    uint32_t EIP = *(uint32_t*)(tsk->esp + 32);
+
+    kprintf("Performing stack trace\n");
+    kprintf("CS:%p\n", EIP);
+
+    while(EBP){
+        if(*(uint32_t*)(EBP+4)){kprintf("CS:%p\n", *(uint32_t*)(EBP+4));}
+        else{break;}
+        EBP = *(uint32_t*)EBP;
+    }
+
 }
 
 void thread_cleanup(){

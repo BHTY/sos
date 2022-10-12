@@ -33,6 +33,8 @@ void send_message(task* recipient, void* contents);
 bool pop_message(message_t *msg);
 void atomic_read(atomic_t *p, void *value);
 void atomic_set(atomic_t *p, void *value);
+void* atomic_read_lock(atomic_t *p);
+void atomic_set_release(atomic_t *p, void *value);
 void acquire_mutex(mutex_t *p);
 void release_mutex(mutex_t *p);
 task* spawnThread(void (*fun)(), void* arg);
@@ -41,4 +43,5 @@ void yield();
 void resume();
 void createTask(task* ptr, void (*fun)(), void* arg);  
 void printTasks();
+void trace(task* tsk);
 #endif
