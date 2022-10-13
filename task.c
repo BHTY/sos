@@ -124,6 +124,11 @@ void trace(task* tsk){
 void thread_cleanup(){
     task* tmp = curTask;
 
+    kprintf("%p Next:%p Prev:%p\n", curTask, curTask->next, curTask->prev);
+    kprintf("%p Next:%p Prev:%p\n", curTask->next, curTask->next->next, curTask->next->prev);
+    kprintf("%p Next:%p Prev:%p\n", curTask->prev, curTask->prev->next, curTask->prev->prev);
+    kprintf("%p Next:%p Prev:%p\n", curTask->next->next, curTask->next->next->next, curTask->next->next->prev);
+
     curTask->prev->next = curTask->next;
     curTask->next->prev = curTask->prev;
 
@@ -149,7 +154,7 @@ void createTask(task* ptr, void (*fun)(), void* arg){
 void init_tasking(){
     curTask = kmalloc(sizeof(task));
     curTask->next = curTask;
-    curTask->prev = curTask;
+    curTask->prev = NULL;
 }
 
 task* spawnThread(void (*fun)(), void* arg){ 
@@ -157,7 +162,12 @@ task* spawnThread(void (*fun)(), void* arg){
     curTask->next = kmalloc(sizeof(task));
     curTask->next->prev = curTask;
     curTask->next->next = temp;
-    //curTask->next->next->prev = 
+    temp->prev = curTask->next;
+    
+    if(!curTask->prev){
+        curTask->prev = temp;
+    }
+
     createTask(curTask->next, fun, arg);
 
     return curTask->next;

@@ -28,6 +28,7 @@ void bg(size_t arg){
 
     while(1){
         if(kill){
+            kprintf("Exiting this thread and this thread only\n");
             return;
         }
 
