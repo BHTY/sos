@@ -66,7 +66,6 @@ void send_message(task *recipient, void *contents){
     message_t **msg = &(recipient->msg);
     
     while(*msg){
-        yield();
         msg = (*msg)->next;
     }
 
@@ -77,7 +76,6 @@ void send_message(task *recipient, void *contents){
 }
 
 bool pop_message(message_t *msg){
-    yield();
 
     if(curTask->msg){
 
@@ -89,6 +87,7 @@ bool pop_message(message_t *msg){
 
         return 1;
     }
+
     return 0;
 }
 
@@ -123,11 +122,6 @@ void trace(task* tsk){
 
 void thread_cleanup(){
     task* tmp = curTask;
-
-    kprintf("%p Next:%p Prev:%p\n", curTask, curTask->next, curTask->prev);
-    kprintf("%p Next:%p Prev:%p\n", curTask->next, curTask->next->next, curTask->next->prev);
-    kprintf("%p Next:%p Prev:%p\n", curTask->prev, curTask->prev->next, curTask->prev->prev);
-    kprintf("%p Next:%p Prev:%p\n", curTask->next->next, curTask->next->next->next, curTask->next->next->prev);
 
     curTask->prev->next = curTask->next;
     curTask->next->prev = curTask->prev;

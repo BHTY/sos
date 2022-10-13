@@ -7,6 +7,7 @@
 #include "8042.h"
 #include "heap.h"
 #include "task.h"
+#include "ports.h"
 
 void clearscreen(){
     uint8_t *ptr;
@@ -28,9 +29,10 @@ void bg(size_t arg){
 
     while(1){
         if(kill){
-            kprintf("Exiting this thread and this thread only\n");
             return;
         }
+
+        yield();
 
         if(pop_message(&msg)){
             if(msg.data == 0xDEADBEEF){
@@ -65,8 +67,8 @@ void DVD(size_t arg){
 
     _1 = textptr[y * 80 + x];
     _2 = textptr[y * 80 + x+1];
-    _3 = textptr[y+1 * 80 + x];
-    _4 = textptr[y+1 * 80 + x+1];
+    _3 = textptr[(y+1) * 80 + x];
+    _4 = textptr[(y+1) * 80 + x+1];
 
     while(1){
         textptr[y * 80 + x] = _1;
@@ -125,8 +127,8 @@ void main(){ //console commands - ver and proc
     clearscreen();
 
     init_heap(0x100000, 0x100000);
-
     init_tasking();
+
     task *timer = spawnThread(bg, 76);
 
     setcolor(0x0B);
@@ -145,6 +147,7 @@ void main(){ //console commands - ver and proc
         }
         else if(strcmp(buf, "proc") == 0){
             yield();
+            setcolor(0x02);
             printTasks();
         }else if(strcmp(buf, "kill") == 0){
             kill = 1;
@@ -155,7 +158,7 @@ void main(){ //console commands - ver and proc
         }else if(strcmp(buf, "count") == 0){
             kprintf("Sending message to counter thread, receiving message back with counter status\n");
             send_message(timer, 0xDEADBEEF);
-            while(!pop_message(&msg));
+            while(!pop_message(&msg)){yield();}
             kprintf("Response: %x\n", msg.data);
         }else if(strcmp(buf, "win") == 0){
             *(uint8_t*)(0xb8001) = 0x44;
@@ -169,6 +172,7 @@ void main(){ //console commands - ver and proc
             printBlocks();
         }else if(strcmp(buf, "trace") == 0){
             yield();
+            setcolor(0x02);
             trace(curTask->next);
         }else if(strcmp(buf, "crash") == 0){
             asm(".intel_syntax noprefix");
