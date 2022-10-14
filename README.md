@@ -12,6 +12,7 @@ Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" a
 * * mkd
 * * del
 * * move
+* * copy
 * * ren
 
 Version 0.25 Tasks
