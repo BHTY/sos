@@ -14,16 +14,16 @@ Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" a
 * * move
 * * ren
 
-Version 0.3 Tasks
+Version 0.25 Tasks
 - Executable loader (decide on relocations vs PIC) - handles argc and argv, redirection
 - ATA/IDE PIO driver (https://wiki.osdev.org/ATA_PIO_Mode)
 
-Version 0.4 tasks
+Version 0.3 tasks
 * Preemptive multitasking (timer interrupt - make IDT, reprogram PIT to higher frequency)
 * VM86 monitor
 * PS/2 mouse driver
 
-Version 0.5 tasks
+Version 0.35 tasks
 * VESA VCI driver
 * Graphical terminal & demos
 * Begin windowing system
