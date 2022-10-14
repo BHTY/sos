@@ -3,23 +3,23 @@ Basic pmode operating system
 
 Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" and separate into v0.2 branch when done
 * ATA/IDE PIO driver
-
-Version 0.3 Tasks
-* Filesystem driver
-- Executable loader (decide on relocations vs PIC)
 * Make the message passing not suck ass (add PIDs/TIDs for sender/receiver instead of slinging around task* pointers, make messages atomic, add -1 for systemwide broadcast)
-* Basic terminal (no scripting capabilities - yet)
+* COM/serial port driver
+* Virtual filesystem + RAM disk
+* Basic terminal (no scripting capabilities)
 * * ver
 * * cd
-* * ls
+* * dir
 * * mkd
 * * del
-* * <app name> - execs app
+* * move
+* * ren
+
+Version 0.3 Tasks
+- Executable loader (decide on relocations vs PIC) - handles argc and argv, redirection
 
 Version 0.4 tasks
 * Preemptive multitasking (timer interrupt - make IDT, reprogram PIT to higher frequency)
-* Filesystem driver
-* Executable loader (decide on relocations vs PIC)
 * VM86 monitor
 * PS/2 mouse driver
 
