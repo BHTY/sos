@@ -2,8 +2,6 @@
 Basic pmode operating system
 
 Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" and separate into v0.2 branch when done
-* Make the message passing not suck ass (add PIDs/TIDs for sender/receiver instead of slinging around task* pointers, make messages atomic, add -1 for systemwide broadcast)
-* COM/serial port driver
 * Virtual filesystem + RAM disk
 * Basic terminal (no scripting capabilities)
 * * ver
@@ -16,6 +14,8 @@ Version 0.2 (in progress) tasks - post to OSdev "What does your OS look like?" a
 * * ren
 
 Version 0.25 Tasks
+* Make the message passing not suck ass (add PIDs/TIDs for sender/receiver instead of slinging around task* pointers, make messages atomic, add -1 for systemwide broadcast)
+* COM/serial port driver (port E9 hack supported)
 - Executable loader (decide on relocations vs PIC) - handles argc and argv, redirection
 - ATA/IDE PIO driver (https://wiki.osdev.org/ATA_PIO_Mode)
 
